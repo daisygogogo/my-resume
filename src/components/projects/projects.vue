@@ -2,7 +2,13 @@
   <div class="skill">
      <div class="title">项目经历</div>
      <ul class="projects_wraper">
-       <li v-for="item in projectList" class="item">
+       <li v-for="(item,index) in projectList" class="item"
+       :class="{
+      currentItem: currentItem === index,
+      preItem: currentItem > index,
+      nextItem:currentItem < index
+      }" @touchmove.prevent="touchmove" @touchstart="touchstart" @touchend="touchend"
+      :style="{zIndex:currentItem > index ? index:projectList.length-index}">
          <div :style="{backgroundImage:'url('+ item.image +')'}" class="image"></div>
          <p class="desc">{{item.desc}}</p>
          <div class="tool">
@@ -43,20 +49,55 @@ export default {
     return { 
       projectList:projectList,
       qrcodeShow: false, //是否显示二维码
+      currentItem:0,  //当前中间显示的item下标
+      startPos:{ //触摸点的初始值
+        x:0,
+        y:0
+      },
+      offsetPos:{ //触摸点移动值
+        x:0,
+        y:0
+      }
     }
   },
   components:{
     arrow
   },
   computed: {
-    
+    getZindex: function(index){
+      let zIndex = this.projectList.length-index;
+      return zIndex;
+    }
   },
   mounted(){
   },
   methods: {
     showQrCode: function(){
       this.qrcodeShow = !this.qrcodeShow;     
-    }
+    },
+    touchmove(e){
+      var touchmove = e.targetTouches[0];
+      this.offsetPos.x = touchmove.clientX - this.startPos.x;　
+    },
+    touchstart(e){
+      //touches是屏幕上所有的touch，取第一个
+      var touchstart = e.targetTouches[0]; 
+      this.startPos.x = touchstart.clientX ;
+    },
+    touchend(e){
+      if(this.offsetPos.x < -50){ //如果滑动x差值为负值，则是向左滑动到下一页，距离大于50才切换页面
+        if( this.currentItem < projectList.length -1 ){//判断最大页码
+          this.currentItem++; 
+        }
+        
+      }else if(this.offsetPos.x > 50){
+        //如果滑动x差值为正值，则是向右滑动到上一页，距离大于50才切换页面
+        //判断最小页码
+        if( this.currentItem >= 1){
+          this.currentItem--;
+        }        
+      }
+    },
   }
 }
 </script>
@@ -73,12 +114,22 @@ export default {
       font-size:20px;
     }  
   }
+  @media (max-width: 430px){
+    .arrow{
+      display:none;
+    }
+  }
   .projects_wraper{
     display:flex;
     justify-content: space-around;
     flex-wrap: nowrap;
     margin-top:20px;
     width:76%;
+    @media (max-width: 430px){
+      width:100%;
+      position:relative;
+      height:420px;
+    }  
     .item{
       display:inline-block;
       position: relative;
@@ -91,6 +142,22 @@ export default {
       margin:10px;
       box-sizing: border-box;
       overflow: hidden;
+      border-radius: 6px;
+      @media (max-width: 430px){
+        position:absolute;
+        left:10px;
+        transition:all 0.4s;
+        &.preItem{
+          transform: translateX(-300px) translateZ(0);
+        }
+        &.currentItem{
+          transform: translateX(0) translateZ(0);
+        }
+        &.nextItem{
+          transform: translateX(300px) translateZ(0);
+        }
+      } 
+      
 
       &:last-child{
         margin-right:0;

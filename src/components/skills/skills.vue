@@ -72,7 +72,7 @@ export default {
       display:inline-block;
       @media (max-width: 430px){
           margin-bottom:40px;
-        }
+      }
       .out_tracker{
         position:relative;
         width:242px;

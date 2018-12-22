@@ -1,5 +1,5 @@
 <template>
-  <div id="app" @mousewheel="mousewheel" @touchmove.prevent="touchmove" @touchstart="touchstart">
+  <div id="app" @mousewheel="mousewheel" @touchmove.prevent="touchmove" @touchstart="touchstart" @touchend="touchend">
     <menu-bar :currentPage="currentPage"  @click-index="listenClickIndex"></menu-bar>
     <index class="page" 
       :class="{
@@ -54,6 +54,14 @@ export default {
       heightList:[],
       scrollY:0, //滚动条的位置
       pageSize:undefined,
+      startPos:{ //触摸点的初始值
+        x:0,
+        y:0
+      },
+      offsetPos:{ //触摸点移动值
+        x:0,
+        y:0
+      }
     }
   },
   components: {
@@ -79,7 +87,25 @@ export default {
       }
     },
     touchmove(e){
-      console.log(e)
+      var touchmove = e.targetTouches[0];
+      this.offsetPos.y = touchmove.clientY - this.startPos.y;　
+    },
+    touchstart(e){
+      //touches是屏幕上所有的touch，取第一个
+      var touchstart = e.targetTouches[0]; 
+      this.startPos.y = touchstart.clientY ;
+    },
+    touchend(e){
+      if(this.offsetPos.y < -100){ //如果滑动Y差值为负值，则是向下滑动，距离大于100才展示下一页
+        if(this.currentPage < this.pageSize-1){ //判断最大页码
+          this.currentPage++; 
+        }  
+      }else if(this.offsetPos.y > 100){
+        //如果滑动Y差值为正值，则是向上滑动，距离大于100才展示上一页
+        if(this.currentPage>=1){ //判断最大页码
+          this.currentPage--;
+        }  
+      }
     },
     listenClickIndex(v){
       this.currentPage = v;

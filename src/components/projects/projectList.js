@@ -1,7 +1,7 @@
 export default [{
     image: '/static/images/projects/51HCH.png',
     desc: '一个企业服务平台，为创新创业者提供找园区，买服务等功能。前端使用 jQuery 开发，后端使用 Java 和 MySQL 搭建。',
-    url: 'http://51hch.com/home/service/service_index.htm',
+    url: 'http://51hch.com/',
     qrcode: '/static/images/projects/qr_code_51HCH.png'
   }, {
     image: '/static/images/projects/wenya.png',
